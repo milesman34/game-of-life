@@ -4,3 +4,9 @@
     justify-content: center;
     align-items: center;
 }
+
+.flex-center-vert {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
