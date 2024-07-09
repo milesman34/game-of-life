@@ -3,11 +3,19 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: rgb(225, 225, 225);
+    background-color: black;
     font-family: Inter;
 }
 
 .app {
-    display: grid;
-    grid-template-rows: 8vh auto;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.app-header {
+    font-size: 1.25em;
+    background-color: rgb(125, 125, 125);
+    user-select: none;
+    height: 5vh;
 }

@@ -1,0 +1,17 @@
+.game-of-life-container {
+    width: 100%;
+    height: 75%;
+    background-color: black;
+    border: 10px solid rgb(175, 175, 175);
+    box-sizing: border-box;
+
+    /* display: flex; */
+    /* flex-direction: column; */
+    overflow: hidden;
+}
+
+.game-row {
+    display: flex;
+    flex-direction: row;
+    min-height: 50px;
+}
