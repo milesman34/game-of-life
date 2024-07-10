@@ -10,9 +10,17 @@ const GameOfLife = () => {
     const [width, setWidth] = useState(200);
     const [height, setHeight] = useState(200);
 
+    // Set up the view width/height
+    const [viewWidth, setViewWidth] = useState(25);
+    const [viewHeight, setViewHeight] = useState(25);
+
     return (
         <div className="game-of-life-container">
-            <GameGrid width={width} height={height} />
+            <GameGrid 
+                width={width} 
+                height={height}
+                viewWidth={viewWidth}
+                viewHeight={viewHeight} />
 
             <div className="game-controls">
                 <div className="size-controller">
