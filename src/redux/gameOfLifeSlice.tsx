@@ -37,14 +37,14 @@ export const gameOfLifeSlice = createSlice({
         viewWidth: 40,
         viewHeight: 20,
 
-        row: baseCoordinate(200, 40),
-        column: baseCoordinate(200, 20)
+        row: baseCoordinate(200, 20),
+        column: baseCoordinate(200, 40)
     },
     reducers: {
         // Toggles the tile at the given row/column
         toggle(state: GameOfLifeState, action: PayloadAction<{
-            row: number,
-            column: number
+            row: number;
+            column: number;
         }>) {
             const { row, column } = action.payload;
 
@@ -68,11 +68,47 @@ export const gameOfLifeSlice = createSlice({
                 state.column = newColumn;
             }
         },
+
+        // Updates the view width/height
+        updateViewport(state: GameOfLifeState, action: PayloadAction<{
+            width: number;
+            height: number;
+        }>) {
+            const { width, height } = action.payload;
+
+            // The viewport size must be no larger than the grid size
+            state.viewWidth = Math.min(state.width, width);
+            state.viewHeight = Math.min(state.height, height);
+
+            state.row = baseCoordinate(state.height, state.viewHeight);
+            state.column = baseCoordinate(state.width, state.viewWidth);
+        },
+
+        // Resets the grid with a new width/height
+        resetGrid(state: GameOfLifeState, action: PayloadAction<{
+            width: number;
+            height: number;
+        }>) {
+            const { width, height } = action.payload;
+
+            state.width = width;
+            state.height = height;
+
+            // The viewport size must be no larger than the grid size
+            state.viewWidth = Math.min(state.viewWidth, state.width);
+            state.viewHeight = Math.min(state.viewHeight, state.height);
+
+            state.row = baseCoordinate(state.height, state.viewHeight);
+            state.column = baseCoordinate(state.width, state.viewWidth);
+
+            // Create the new grid
+            state.grid = generateGrid(width, height);
+        }
     }
 });
 
 // Set up the actions
-export const { toggle, addRow, addColumn } = gameOfLifeSlice.actions;
+export const { toggle, addRow, addColumn, updateViewport, resetGrid } = gameOfLifeSlice.actions;
 
 // Set up the selectors
 export const selectValueAt = (row: number, column: number) => (state: RootState): boolean => state.life.grid[row][column];
