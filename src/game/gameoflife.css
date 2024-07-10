@@ -77,3 +77,15 @@
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+.play-buttons {
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+}
+
+.step-button {
+    padding: 10px;
+}

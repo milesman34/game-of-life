@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import GameGrid from "./GameGrid";
 import "./gameoflife.css";
-import { resetGrid, selectColumn, selectHeight, selectRow, selectViewHeight, selectViewWidth, selectWidth, updateViewport } from "../redux/gameOfLifeSlice";
+import { resetGrid, selectColumn, selectHeight, selectRow, selectViewHeight, selectViewWidth, selectWidth, simulateStep, updateViewport } from "../redux/gameOfLifeSlice";
 import { useState } from "react";
 
 // This component represents the mian game of life component
@@ -23,6 +23,7 @@ const GameOfLife = () => {
     const [formViewHeight, setFormViewHeight] = useState(viewHeight.toString());
 
     // Did the form for size cause an update?
+    // The idea behind these 2 variables is so that if the viewport size gets changed through one of the 2 methods, it will actually update the text
     const [formSizeUpdate, setFormSizeUpdate] = useState(false);
 
     // Did the form for viewport size cause an update?
@@ -117,6 +118,12 @@ const GameOfLife = () => {
                 <div className="reset-button-container">
                     <button className="reset-button" onClick={onUpdateViewportClicked}>
                         Update
+                    </button>
+                </div>
+
+                <div className="play-buttons">
+                    <button className="step-button" onClick={() => dispatch(simulateStep())}>
+                        Step
                     </button>
                 </div>
             </div>

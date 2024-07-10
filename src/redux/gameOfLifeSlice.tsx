@@ -17,6 +17,11 @@ interface GameOfLifeState {
     // Current offset position (top left) of grid
     row: number;
     column: number;
+
+    // Maps active positions to true
+    activeCells: {
+        [key: string]: boolean;
+    }
 }
 
 // Calculates the top-left coordinate for the center
@@ -25,6 +30,9 @@ const baseCoordinate = (maxSize: number, viewSize: number): number => Math.round
 // Generates an empty grid
 const generateGrid = (width: number, height: number): Array<Array<boolean>> =>
     range(0, height).map(() => range(0, width).map(() => false));
+
+// All possible offsets
+const offsets = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
 export const gameOfLifeSlice = createSlice({
     name: "life",
@@ -38,7 +46,9 @@ export const gameOfLifeSlice = createSlice({
         viewHeight: 20,
 
         row: baseCoordinate(200, 20),
-        column: baseCoordinate(200, 40)
+        column: baseCoordinate(200, 40),
+
+        activeCells: {}
     },
     reducers: {
         // Toggles the tile at the given row/column
@@ -49,6 +59,13 @@ export const gameOfLifeSlice = createSlice({
             const { row, column } = action.payload;
 
             state.grid[row][column] = !state.grid[row][column]
+
+            if (state.grid[row][column]) {
+                // There doesn't seem to be a good solution to this in typescript
+                state.activeCells[JSON.stringify([row, column])] = false;
+            } else {
+                delete state.activeCells[JSON.stringify([row, column])];
+            }
         },
 
         // Adds to the row if possible
@@ -103,12 +120,66 @@ export const gameOfLifeSlice = createSlice({
 
             // Create the new grid
             state.grid = generateGrid(width, height);
+
+            state.activeCells = {};
+        },
+
+        // Simulates 1 step of the game of life
+        simulateStep(state: GameOfLifeState) {
+            // Figure out what positions to check
+            const checkPositions: {
+                [key: string]: boolean
+            } = {};
+
+            for (const position in state.activeCells) {
+                const [row, column] = JSON.parse(position);
+
+                // I can't use the normal offsets bc it doesn't include the original cell
+                for (let offRow = -1; offRow <= 1; offRow++) {
+                    for (let offCol = -1; offCol <= 1; offCol++) {
+                        const newRow = row + offRow;
+                        const newCol = column + offCol;
+
+                        if (newRow >= 0 && newRow < state.height && newCol >= 0 && newCol <= state.width) {
+                            checkPositions[JSON.stringify([newRow, newCol])] = true;
+                        }
+                    }
+                }
+            }
+
+            // Use a 2D object as a hashmap
+            const newGrid = generateGrid(state.width, state.height);
+            state.activeCells = {};
+
+            for (const position in checkPositions) {
+                const [row, column] = JSON.parse(position);
+
+                let count = 0;
+
+                // Count neighbors
+                for (const offset of offsets) {
+                    const newRow = row + offset[0];
+                    const newCol = column + offset[1];
+                    
+                    if (newRow >= 0 && newRow < state.height && newCol >= 0 && newCol <= state.width && state.grid[newRow][newCol]) {
+                        count++;
+                    } 
+                }
+
+                if (count === 3 || (state.grid[row][column] && count === 2)) {
+                    newGrid[row][column] = true;
+                    
+                    state.activeCells[JSON.stringify([row, column])] = true;
+                }
+            }
+
+            state.grid = newGrid;
         }
     }
 });
 
 // Set up the actions
-export const { toggle, addRow, addColumn, updateViewport, resetGrid } = gameOfLifeSlice.actions;
+export const { toggle, addRow, addColumn, updateViewport, resetGrid, simulateStep } = gameOfLifeSlice.actions;
 
 // Set up the selectors
 export const selectValueAt = (row: number, column: number) => (state: RootState): boolean => state.life.grid[row][column];
