@@ -1,35 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Cell from "./Cell";
 import range from "../range";
+import { useDispatch, useSelector } from "react-redux";
+import { addColumn, addRow, selectColumn, selectRow, selectViewHeight, selectViewWidth } from "../redux/gameOfLifeSlice";
 
 // This component represents the game's grid
-const GameGrid = ({ width, height, viewWidth, viewHeight }: {
-    // Dimensions of the grid
-    width: number;
-    height: number;
+const GameGrid = () => {
+    const dispatch = useDispatch();
 
-    // Dimensions of the viewable section
-    viewWidth: number;
-    viewHeight: number;
-}) => {
-    // Track row/column offset of the grid
-    const [rowOffset, setRowOffset] = useState(0);
-    const [columnOffset, setColumnOffset] = useState(0);
+    const rowOffset = useSelector(selectRow);
+    const columnOffset = useSelector(selectColumn);
 
-    // Moves the row/column offset by the given amounts
-    const moveOffsets = (row: number, column: number) => {
-        setRowOffset(old => {
-            const newValue = old + row;
-
-            return (newValue >= 0 && newValue <= height - viewHeight) ? newValue : old;
-        });
-
-        setColumnOffset(old => {
-            const newValue = old + column;
-
-            return (newValue >= 0 && newValue <= width - viewWidth) ? newValue : old;
-        });
-    }
+    const viewWidth = useSelector(selectViewWidth);
+    const viewHeight = useSelector(selectViewHeight);
 
     useEffect(() => {
         const listener = (event: KeyboardEvent) => {
@@ -37,25 +20,25 @@ const GameGrid = ({ width, height, viewWidth, viewHeight }: {
                 case "ArrowLeft":
                 case "a":
                 case "A":
-                    moveOffsets(0, -1);
+                    dispatch(addColumn(-1));
                     break;
 
                 case "ArrowRight":
                 case "d":
                 case "D":
-                    moveOffsets(0, 1);
+                    dispatch(addColumn(1));
                     break;
 
                 case "ArrowUp":
                 case "w":
                 case "W":
-                    moveOffsets(-1, 0);
+                    dispatch(addRow(-1));
                     break;
 
                 case "ArrowDown":
                 case "s":
                 case "S":
-                    moveOffsets(1, 0);
+                    dispatch(addRow(1));
                     break;
             }
         }
@@ -65,7 +48,7 @@ const GameGrid = ({ width, height, viewWidth, viewHeight }: {
         return () => {
             document.removeEventListener("keydown", listener);
         }
-    }, []);
+    }, [dispatch]);
 
     // Set up the grid
     const grid = range(rowOffset, rowOffset + viewHeight).map(row => 
