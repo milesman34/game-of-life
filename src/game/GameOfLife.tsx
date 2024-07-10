@@ -7,8 +7,8 @@ const GameOfLife = () => {
     // Rendering seems to perform really poorly with high sizes
     // Maybe I could set it up so that dragging is disabled and instead it just displays a set amount in a square space
     // So those are the only ones that get rendered, but the rest still exists
-    const [width, setWidth] = useState(50);
-    const [height, setHeight] = useState(50);
+    const [width, setWidth] = useState(200);
+    const [height, setHeight] = useState(200);
 
     return (
         <div className="game-of-life-container">
