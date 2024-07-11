@@ -37,7 +37,7 @@ const GameOfLife = () => {
     }
 
     const onNewGridClicked = () => {
-        // This should update the viewport size too 
+        // This should update the viewport size <too></too> 
         dispatch(updateViewport({
             width: tryParse(formViewWidth, viewWidth),
             height: tryParse(formViewHeight, viewHeight)
