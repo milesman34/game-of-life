@@ -19,7 +19,6 @@
 .game-row {
     display: flex;
     flex-direction: row;
-    min-height: 50px;
 }
 
 .game-controls {
@@ -88,4 +87,8 @@
 
 .step-button {
     padding: 10px;
+}
+
+.pause-button {
+    margin-left: 20px;
 }

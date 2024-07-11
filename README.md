@@ -1,2 +1,1 @@
-I could add some sort of auto-play ability which can be paused
-I could also add the ability to zoom in/out
+Basic Game of Life simulation using React + Typescript. Allows the user to change the grid size, zoom, and pause/resume the simulation. High viewport sizes are not that good for performance.

@@ -22,6 +22,9 @@ interface GameOfLifeState {
     activeCells: {
         [key: string]: boolean;
     }
+
+    // Size of a rendered cell
+    cellSize: number;
 }
 
 // Calculates the top-left coordinate for the center
@@ -48,7 +51,9 @@ export const gameOfLifeSlice = createSlice({
         row: baseCoordinate(200, 20),
         column: baseCoordinate(200, 40),
 
-        activeCells: {}
+        activeCells: {},
+
+        cellSize: 50
     },
     reducers: {
         // Toggles the tile at the given row/column
@@ -122,6 +127,8 @@ export const gameOfLifeSlice = createSlice({
             state.grid = generateGrid(width, height);
 
             state.activeCells = {};
+
+            state.cellSize = 50;
         },
 
         // Simulates 1 step of the game of life
@@ -174,12 +181,26 @@ export const gameOfLifeSlice = createSlice({
             }
 
             state.grid = newGrid;
+        },
+
+        // Adds a value to the cell size
+        addCellSize(state: GameOfLifeState, action: PayloadAction<number>) {
+            state.cellSize += action.payload;
+
+            // Clamp it within bounds
+            if (state.cellSize <= 5) {
+                state.cellSize = 5;
+            }
+
+            if (state.cellSize >= 200) {
+                state.cellSize = 200;
+            }
         }
     }
 });
 
 // Set up the actions
-export const { toggle, addRow, addColumn, updateViewport, resetGrid, simulateStep } = gameOfLifeSlice.actions;
+export const { toggle, addRow, addColumn, updateViewport, resetGrid, simulateStep, addCellSize } = gameOfLifeSlice.actions;
 
 // Set up the selectors
 export const selectValueAt = (row: number, column: number) => (state: RootState): boolean => state.life.grid[row][column];
@@ -189,5 +210,6 @@ export const selectViewWidth = (state: RootState): number => state.life.viewWidt
 export const selectViewHeight = (state: RootState): number => state.life.viewHeight;
 export const selectRow = (state: RootState): number => state.life.row;
 export const selectColumn = (state: RootState): number => state.life.column;
+export const selectCellSize = (state: RootState): number => state.life.cellSize;
 
 export default gameOfLifeSlice.reducer;

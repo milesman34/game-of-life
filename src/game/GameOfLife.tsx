@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import GameGrid from "./GameGrid";
 import "./gameoflife.css";
 import { resetGrid, selectColumn, selectHeight, selectRow, selectViewHeight, selectViewWidth, selectWidth, simulateStep, updateViewport } from "../redux/gameOfLifeSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // This component represents the mian game of life component
 const GameOfLife = () => {
@@ -28,6 +28,9 @@ const GameOfLife = () => {
 
     // Did the form for viewport size cause an update?
     const [formViewSizeUpdate, setFormViewSizeUpdate] = useState(false);
+
+    // Is the simulation paused
+    const [paused, setPaused] = useState(true);
 
     // Tries to parse a number string, returning the default value otherwise
     const tryParse = (string: string, defaultValue: number): number => {
@@ -73,6 +76,23 @@ const GameOfLife = () => {
         setFormViewHeight(viewHeight.toString());
         setFormViewSizeUpdate(false);
     }
+
+    // Runs when the pause button is clicked
+    const onPauseClicked = () => {
+        setPaused(!paused);
+    }
+
+    // Set up an effect for the auto-play mode
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!paused)
+                dispatch(simulateStep());
+        }, 500);
+
+        return () => {
+            clearInterval(interval);
+        }
+    }, [dispatch, paused]);
 
     return (
         <div className="game-of-life-container">
@@ -130,6 +150,10 @@ const GameOfLife = () => {
                 <div className="play-buttons">
                     <button className="step-button" onClick={() => dispatch(simulateStep())}>
                         Step
+                    </button>
+                    
+                    <button className="pause-button" onClick={onPauseClicked}>
+                        {paused ? "Play" : "Pause"}
                     </button>
                 </div>
             </div>
